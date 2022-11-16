@@ -37,7 +37,9 @@ public abstract class EarthquakeMarker extends SimplePointMarker
 	public static final float THRESHOLD_DEEP = 300;
 
 	// ADD constants for colors
-
+	public static final float RED_COLOR = 255;
+	public static final float GREEN_COLOR = 255;
+	public static final float BLUE_COLOR = 255;
 	
 	// abstract method implemented in derived classes
 	public abstract void drawEarthquake(PGraphics pg, float x, float y);
@@ -67,8 +69,14 @@ public abstract class EarthquakeMarker extends SimplePointMarker
 		// call abstract method implemented in child class to draw marker shape
 		drawEarthquake(pg, x, y);
 		
-		// OPTIONAL TODO: draw X over marker if within past day		
-		
+		// OPTIONAL TODO: draw X over marker if within past day
+		String age = getStringProperty("age");
+		if(age.equals("Past Day")) {
+			pg.stroke(0);
+			pg.strokeWeight(2);
+			pg.line(x + radius, y - radius, x - radius, y + radius);
+			pg.line(x - radius, y - radius, x + radius, y + radius);
+		}
 		// reset to previous styling
 		pg.popStyle();
 		
@@ -80,13 +88,18 @@ public abstract class EarthquakeMarker extends SimplePointMarker
 	// But this is up to you, of course.
 	// You might find the getters below helpful.
 	private void colorDetermine(PGraphics pg) {
-		//TODO: Implement this method
+		if(getDepth() > 0 && getDepth() <= THRESHOLD_INTERMEDIATE) {
+			pg.fill(RED_COLOR, GREEN_COLOR, 0);
+		} else if(getDepth() > THRESHOLD_INTERMEDIATE && getDepth() <= THRESHOLD_DEEP) {
+			pg.fill(0,0, BLUE_COLOR);
+		} else {
+			pg.fill(RED_COLOR, 0,0);
+		}
 	}
 	
-	
-	/*
-	 * getters for earthquake properties
-	 */
+	public float setMarkerSize() {
+		return getRadius() + getMagnitude();
+	}
 	
 	public float getMagnitude() {
 		return Float.parseFloat(getProperty("magnitude").toString());
